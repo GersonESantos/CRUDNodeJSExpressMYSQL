@@ -1,6 +1,7 @@
 const express = require('express');
 
-
+const tasks = [];
+let counter = 1;
 
 const app = express();
 
