@@ -3,14 +3,7 @@ const connectToDb = require('./database/db');
 connectToDb();
 const express = require('express');
 
-const tasks = [
-  { id: 't1', title: 'Configurar Projeto', description: 'Inicializar repositório e instalar dependências', done: false, createdAt: new Date().toISOString() },
-  { id: 't2', title: 'Modelagem de Dados', description: 'Definir esquemas do banco de dados para a clínica', done: false, createdAt: new Date().toISOString() },
-  { id: 't3', title: 'Integração Firebase', description: 'Conectar a aplicação ao Firestore', done: false, createdAt: new Date().toISOString() },
-  { id: 't4', title: 'Layout da Home', description: 'Desenvolver a interface principal em React', done: false, createdAt: new Date().toISOString() },
-  { id: 't15', title: 'Backup de Dados', description: 'Configurar rotina de exportação do MongoDB', done: false, createdAt: new Date().toISOString() }
-];
-let counter = 3;
+
 const app = express();
 
 const cors = require('cors');
@@ -28,30 +21,27 @@ app.get('/health', (req, res) => {
 
 });
 
-app.get('/tasks', (req, res) => {
+const Task = require('./models/Task');
 
-  res.status(200).json({ data: tasks });
-
+app.get('/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.status(200).json({ data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'DB_ERROR', message: 'Erro ao buscar tasks', details: err.message });
+  }
 });
 
-app.get('/tasks/:id', (req, res) => {
-
-  const task = tasks.find(t => t.id === req.params.id);
-
-  if (!task) {
-
-    return res.status(404).json({
-
-      error: 'NOT_FOUND',
-
-      message: 'Task não encontrada'
-
-    });
-
+app.get('/tasks/:id', async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Task não encontrada' });
+    }
+    res.status(200).json({ data: task });
+  } catch (err) {
+    res.status(400).json({ error: 'INVALID_ID', message: 'ID inválido', details: err.message });
   }
-
-  res.status(200).json({ data: task });
-
 });
 
 app.post('/tasks', (req, res) => {
@@ -64,14 +54,7 @@ app.post('/tasks', (req, res) => {
     });
   }
 
-  const task = {
-    id: `t${counter++}`,
-    title: title.trim(),
-    description: description ? String(description).trim() : '',
-    done: Boolean(done),
-    createdAt: new Date().toISOString()
-  };
-
+  const Task = require('./models/Task');
   tasks.push(task);
   res.status(201).json({ data: task });
 });
