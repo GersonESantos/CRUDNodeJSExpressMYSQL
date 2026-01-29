@@ -1,9 +1,15 @@
 const express = require('express');
 
-const tasks = [];
-let counter = 1;
-
+const tasks = [
+  { id: 't1', title: 'Exemplo', description: 'Primeira tarefa', done: false, createdAt: new Date().toISOString() },
+  { id: 't2', title: 'Teste', description: 'Segunda tarefa', done: false, createdAt: new Date().toISOString() }
+];
+let counter = 3;
 const app = express();
+
+const cors = require('cors');
+
+// app.use(cors({ origin: 'http://localhost:5173' }));
 
 app.use(express.json());
 
