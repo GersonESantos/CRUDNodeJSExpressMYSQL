@@ -1,3 +1,6 @@
+
+const connectToDb = require('./database/db');
+connectToDb();
 const express = require('express');
 
 const tasks = [
