@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Tasks Frontend</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Tarefas</h1>
+        <form id="taskForm">
+            <input type="text" id="title" placeholder="Título da tarefa" required>
+            <input type="text" id="description" placeholder="Descrição" required>
+            <button type="submit">Adicionar Tarefa</button>
+        </form>
+        <table id="tasksTable">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
