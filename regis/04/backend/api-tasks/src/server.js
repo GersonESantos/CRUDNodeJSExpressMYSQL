@@ -1,28 +1,155 @@
 const express = require('express');
-const cors = require('cors');
-const tasksRoutes = require('./routes/tasks.routes');
 
+const tasks = [
+  { id: 't1', title: 'Exemplo', description: 'Primeira tarefa', done: false, createdAt: new Date().toISOString() },
+  { id: 't2', title: 'Teste', description: 'Segunda tarefa', done: false, createdAt: new Date().toISOString() }
+];
+let counter = 3;
 const app = express();
 
-// Middlewares globais
-app.use(cors());
+const cors = require('cors');
+
+// app.use(cors({ origin: 'http://localhost:5173' }));
+
 app.use(express.json());
 
-// Health check
+
+
 app.get('/health', (req, res) => {
+
   res.status(200).json({ status: 'ok' });
+
 });
 
-// Rotas de tasks
-app.use('/tasks', tasksRoutes);
+app.get('/tasks', (req, res) => {
 
-// Rota raiz
-app.get('/', (req, res) => {
-  res.json({ message: 'API de Tasks está rodando!' });
+  res.status(200).json({ data: tasks });
+
 });
 
-// Inicialização do servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+app.get('/tasks/:id', (req, res) => {
+
+  const task = tasks.find(t => t.id === req.params.id);
+
+  if (!task) {
+
+    return res.status(404).json({
+
+      error: 'NOT_FOUND',
+
+      message: 'Task não encontrada'
+
+    });
+
+  }
+
+  res.status(200).json({ data: task });
+
 });
+
+app.post('/tasks', (req, res) => {
+
+  const { title, done = false } = req.body;
+
+
+
+  if (!title || typeof title !== 'string') {
+
+    return res.status(400).json({
+
+      error: 'VALIDATION_ERROR',
+
+      message: "Campo 'title' é obrigatório e deve ser string"
+
+    });
+
+  }
+
+
+
+  const task = {
+
+    id: `t${counter++}`,
+
+    title: title.trim(),
+
+    done: Boolean(done),
+
+    createdAt: new Date().toISOString()
+
+  };
+
+
+
+  tasks.push(task);
+
+  res.status(201).json({ data: task });
+
+});
+
+app.patch('/tasks/:id', (req, res) => {
+
+  const task = tasks.find(t => t.id === req.params.id);
+
+  if (!task) {
+
+    return res.status(404).json({ error: 'NOT_FOUND', message: 'Task não encontrada' });
+
+  }
+
+
+
+  const { title, done } = req.body;
+
+
+
+  if (title !== undefined) {
+
+    if (typeof title !== 'string' || !title.trim()) {
+
+      return res.status(400).json({ error: 'VALIDATION_ERROR', message: "'title' deve ser string não vazia" });
+
+    }
+
+    task.title = title.trim();
+
+  }
+
+
+
+  if (done !== undefined) {
+
+    if (typeof done !== 'boolean') {
+
+      return res.status(400).json({ error: 'VALIDATION_ERROR', message: "'done' deve ser boolean" });
+
+    }
+
+    task.done = done;
+
+  }
+
+
+
+  res.status(200).json({ data: task });
+
+});
+
+
+app.delete('/tasks/:id', (req, res) => {
+
+  const index = tasks.findIndex(t => t.id === req.params.id);
+
+  if (index === -1) {
+
+    return res.status(404).json({ error: 'NOT_FOUND', message: 'Task não encontrada' });
+
+  }
+
+  tasks.splice(index, 1);
+
+  res.status(204).send();
+
+});
+
+app.listen(3000, () => console.log('API on http://localhost:3000'));
