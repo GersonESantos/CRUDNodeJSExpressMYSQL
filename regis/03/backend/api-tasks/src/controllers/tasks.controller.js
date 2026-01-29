@@ -1,7 +1,10 @@
 // Handlers para as rotas de tasks
 
 exports.listTasks = (req, res) => {
-  res.json({ message: 'Listando todas as tasks' });
+  res.json([
+    { id: 1, title: 'Exemplo', description: 'Primeira tarefa' },
+    { id: 2, title: 'Teste', description: 'Segunda tarefa' }
+  ]);
 };
 
 exports.createTask = (req, res) => {
