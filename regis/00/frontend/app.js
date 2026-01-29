@@ -1,37 +1,40 @@
+
+// Botão de status health
 document.getElementById('checkHealth').addEventListener('click', async () => {
   const resultDiv = document.getElementById('result');
-  resultDiv.textContent = 'Verificando...';
+  resultDiv.innerHTML = '<span class="animate-pulse text-blue-500">Verificando...</span>';
   try {
     const response = await fetch('http://localhost:3000/health');
     if (!response.ok) throw new Error('Erro na requisição');
     const data = await response.json();
-    resultDiv.textContent = `status: '${data.status}'`;
+    resultDiv.innerHTML = `<span class="font-bold text-green-600">status: '${data.status}'</span>`;
   } catch (err) {
-    resultDiv.textContent = 'Erro ao conectar com a API';
+    resultDiv.innerHTML = '<span class="text-red-500">Erro ao conectar com a API</span>';
   }
 });
 
-// Nova funcionalidade: listar tasks
-const listBtn = document.createElement('button');
-listBtn.textContent = 'Listar Tasks';
-document.querySelector('.container').appendChild(listBtn);
-
-const tasksDiv = document.createElement('div');
-tasksDiv.id = 'tasksList';
-document.querySelector('.container').appendChild(tasksDiv);
+// Botão de listar tasks
+const listBtn = document.getElementById('listTasks');
+const tasksDiv = document.getElementById('tasksList');
 
 listBtn.addEventListener('click', async () => {
-  tasksDiv.textContent = 'Carregando...';
+  tasksDiv.innerHTML = '<span class="animate-pulse text-blue-500">Carregando...</span>';
   try {
     const response = await fetch('http://localhost:3000/tasks');
     if (!response.ok) throw new Error('Erro na requisição');
     const data = await response.json();
     if (Array.isArray(data.data) && data.data.length > 0) {
-      tasksDiv.innerHTML = '<ul>' + data.data.map(task => `<li><b>${task.title}</b>: ${task.description || ''}</li>`).join('') + '</ul>';
+      tasksDiv.innerHTML = `<ul class="divide-y divide-gray-200">` +
+        data.data.map(task =>
+          `<li class="py-2 flex flex-col text-left">
+            <span class="font-semibold text-indigo-700">${task.title}</span>
+            <span class="text-gray-600 text-sm">${task.description || ''}</span>
+          </li>`
+        ).join('') + '</ul>';
     } else {
-      tasksDiv.textContent = 'Nenhuma task encontrada.';
+      tasksDiv.innerHTML = '<span class="text-gray-500">Nenhuma task encontrada.</span>';
     }
   } catch (err) {
-    tasksDiv.textContent = 'Erro ao buscar tasks.';
+    tasksDiv.innerHTML = '<span class="text-red-500">Erro ao buscar tasks.</span>';
   }
 });
